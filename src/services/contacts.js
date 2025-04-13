@@ -10,33 +10,34 @@ export const getContacts = async ({
   filters = {},
 }) => {
   const skip = (page - 1) * perPage;
-  const contactQuery = ContactsCollection.find();
+
+  const filtersQuery = {};
 
   if (filters.type) {
-    contactQuery.where('contactType').equals(filters.type);
+    filtersQuery.contactType = filters.type;
   }
 
-  if (filters.isFavourite) {
-    contactQuery.where('isFavourite').equals(filters.isFavourite);
+  if (typeof filters.isFavourite !== 'undefined') {
+    filtersQuery.isFavourite = filters.isFavourite;
   }
-  const data = await contactQuery
+
+  const data = await ContactsCollection.find(filtersQuery)
     .skip(skip)
     .limit(perPage)
     .sort({ [sortBy]: sortOrder });
 
-  const totalItems = await ContactsCollection.find()
-    .merge(contactQuery)
-    .countDocuments();
+  const totalItems = await ContactsCollection.countDocuments(filtersQuery);
 
   const paginationData = calcPaginationData({ page, perPage, totalItems });
 
   return {
     data,
     totalItems,
+    page,
+    perPage,
     ...paginationData,
   };
 };
-
 export const getContactsById = (id) => ContactsCollection.findOne({ _id: id });
 
 export const addContacts = (payload) => ContactsCollection.create(payload);
