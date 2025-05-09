@@ -18,16 +18,18 @@ export const getContacts = async ({
   }
 
   if (filters.type) {
-    contactQuery.where('userId').equals(filters.type);
+    contactQuery.where('type').equals(filters.type);
   }
 
   if (typeof filters.isFavourite !== 'undefined') {
     contactQuery.where('isFavourite').equals(filters.isFavourite);
   }
 
-  const totalItems = await ContactsCollection.countDocuments(contactQuery);
+  const totalItems = await ContactsCollection.find()
+    .merge(contactQuery)
+    .countDocuments();
 
-  const data = await ContactsCollection.find(contactQuery)
+  const data = await contactQuery
     .skip(skip)
     .limit(perPage)
     .sort({ [sortBy]: sortOrder });
@@ -57,5 +59,3 @@ export const updateContacts = async (_id, payload) => {
 
 export const deleteContacts = (_id) =>
   ContactsCollection.findOneAndDelete({ _id });
-
-//1.29.00 відео

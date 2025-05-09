@@ -19,11 +19,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'user',
-      required: true,
-    },
   },
   { versionKey: false, timestamps: true },
 );

@@ -8,6 +8,20 @@ import {
   accessTokenLifeTime,
   refreshTokenLifeTime,
 } from '../constants/auth.js';
+
+const createSession = () => {
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
+  const accessTokenValidUntil = Date.now() + accessTokenLifeTime;
+  const refreshTokenValidUntil = Date.now() + refreshTokenLifeTime;
+
+  return {
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil,
+    refreshTokenValidUntil,
+  };
+};
 export const findSession = (query) => SessionCollection.findOne(query);
 export const findUser = (query) => UserCollection.findOne(query);
 
@@ -36,14 +50,10 @@ export const loginUser = async (payload) => {
 
   await SessionCollection.findOneAndDelete({ userId: user._id });
 
-  const accessToken = randomBytes(30).toString('base64');
-  const refreshToken = randomBytes(30).toString('base64');
+  const session = createSession();
 
   return SessionCollection.create({
     userId: user._id,
-    accessToken,
-    refreshToken,
-    accessTokenValidUntil: Date.now() + accessTokenLifeTime,
-    refreshTokenValidUntil: Date.now() + refreshTokenLifeTime,
+    ...session,
   });
 };

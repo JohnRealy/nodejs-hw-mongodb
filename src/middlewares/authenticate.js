@@ -1,8 +1,10 @@
 import createHttpError from 'http-errors';
 import { findSession, findUser } from '../services/auth.js';
+import SessionCollection from '../db/models/Session.js';
 
 export const authenticate = async (req, res, next) => {
-  const { authorization } = req.headers;
+  const authorization = req.get('Authorization');
+  1;
   if (!authorization) {
     return next(createHttpError(401, 'Authorization header missing!'));
   }
@@ -12,13 +14,18 @@ export const authenticate = async (req, res, next) => {
   }
 
   const session = await findSession({ accessToken });
+
+  console.log('Access token from header:', accessToken);
+  const sessions = await SessionCollection.find();
+  console.log('All sessions in DB:', sessions);
+
   if (!session) {
     return next(createHttpError(401, 'Session not found'));
   }
   if (session.accessTokenValidUntil < Date.now()) {
     return next(createHttpError(401, 'Access token expired'));
   }
-  const user = findUser({ _id: session.userId });
+  const user = await findUser({ _id: session.userId });
   if (!user) {
     return next(createHttpError(401, 'User not found'));
   }

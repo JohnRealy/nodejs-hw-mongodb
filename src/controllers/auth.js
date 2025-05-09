@@ -1,5 +1,17 @@
 import { loginUser, registerUser } from '../services/auth.js';
 
+const setupSession = (res, session) => {
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUnitl,
+  });
+
+  res.cookie('sessionId', session._id, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUnitl,
+  });
+};
+
 export const registerControler = async (req, res) => {
   await registerUser(req.body);
 
@@ -13,10 +25,7 @@ export const registerControler = async (req, res) => {
 export const loginControler = async (req, res) => {
   const session = await loginUser(req.body);
 
-  res.cookie('refreshToken', session.refreshToken, {
-    httpOnly: true,
-    expires: session.refreshTokenValidUntil,
-  });
+  setupSession(res, session);
 
   res.status(200).json({
     status: 200,
