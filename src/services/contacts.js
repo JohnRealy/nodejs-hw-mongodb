@@ -11,22 +11,26 @@ export const getContacts = async ({
 }) => {
   const skip = (page - 1) * perPage;
 
-  const filtersQuery = {};
+  const contactQuery = ContactsCollection.find();
+
+  if (filters.userId) {
+    contactQuery.where('userId').equals(filters.userId);
+  }
 
   if (filters.type) {
-    filtersQuery.contactType = filters.type;
+    contactQuery.where('userId').equals(filters.type);
   }
 
   if (typeof filters.isFavourite !== 'undefined') {
-    filtersQuery.isFavourite = filters.isFavourite;
+    contactQuery.where('isFavourite').equals(filters.isFavourite);
   }
 
-  const data = await ContactsCollection.find(filtersQuery)
+  const totalItems = await ContactsCollection.countDocuments(contactQuery);
+
+  const data = await ContactsCollection.find(contactQuery)
     .skip(skip)
     .limit(perPage)
     .sort({ [sortBy]: sortOrder });
-
-  const totalItems = await ContactsCollection.countDocuments(filtersQuery);
 
   const paginationData = calcPaginationData({ page, perPage, totalItems });
 
@@ -53,3 +57,5 @@ export const updateContacts = async (_id, payload) => {
 
 export const deleteContacts = (_id) =>
   ContactsCollection.findOneAndDelete({ _id });
+
+//1.29.00 відео
