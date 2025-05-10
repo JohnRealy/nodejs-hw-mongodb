@@ -1,42 +1,44 @@
 import { Router } from 'express';
-
 import {
-  getContactsByIdController,
-  getContactsController,
-  addContactController,
-  updateContactController,
+  createContactController,
   deleteContactController,
+  getContactByIdController,
+  getContactsController,
+  patchContactController,
 } from '../controllers/contacts.js';
-
-import { ctrlWrapper } from '../utils/ctrlWrapper.js';
-import { validataBody } from '../utils/validateBody.js';
-
-import {
-  contactAddSchema,
-  contactUpdateSchema,
-} from '../validation/contacts.js';
-import { isValidId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { isValidId } from '../middlewares/isValidId.js';
+import { upload } from '../middlewares/multer.js';
+import { validateBody } from '../middlewares/validateBody.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import {
+  createContactSchema,
+  updateContactSchema,
+} from '../validation/contacts.js';
 
-export const contactsRouter = Router();
+const router = Router();
 
-contactsRouter.use(authenticate);
+router.use(authenticate);
 
-contactsRouter.get('/', ctrlWrapper(getContactsController));
+router.get('/', ctrlWrapper(getContactsController));
 
-contactsRouter.get('/:id', isValidId, ctrlWrapper(getContactsByIdController));
+router.get('/:contactId', isValidId, ctrlWrapper(getContactByIdController));
 
-contactsRouter.post(
+router.post(
   '/',
-  validataBody(contactAddSchema),
-  ctrlWrapper(addContactController),
+  upload.single('photo'),
+  validateBody(createContactSchema),
+  ctrlWrapper(createContactController),
 );
 
-contactsRouter.patch(
-  '/:id',
+router.patch(
+  '/:contactId',
   isValidId,
-  validataBody(contactUpdateSchema),
-  ctrlWrapper(updateContactController),
+  upload.single('photo'),
+  validateBody(updateContactSchema),
+  ctrlWrapper(patchContactController),
 );
 
-contactsRouter.delete('/:id', isValidId, ctrlWrapper(deleteContactController));
+router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
+
+export default router;

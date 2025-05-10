@@ -1,33 +1,43 @@
 import createHttpError from 'http-errors';
-import { findSession, findUser } from '../services/auth.js';
-import SessionCollection from '../db/models/Session.js';
+
+import { SessionsCollection } from '../db/models/Session.js';
+import { UsersCollection } from '../db/models/User.js';
 
 export const authenticate = async (req, res, next) => {
-  const authorization = req.get('Authorization');
-  1;
-  if (!authorization) {
-    return next(createHttpError(401, 'Authorization header missing!'));
-  }
-  const [bearer, accessToken] = authorization.split(' ');
-  if (bearer !== 'Bearer') {
-    return next(createHttpError(401, 'Header must have type Bearer'));
+  const authHeader = req.get('Authorization');
+
+  if (!authHeader) {
+    next(createHttpError(401, 'Please provide Authorization header'));
+    return;
   }
 
-  const session = await findSession({ accessToken });
+  const bearer = authHeader.split(' ')[0];
+  const token = authHeader.split(' ')[1];
 
-  console.log('Access token from header:', accessToken);
-  const sessions = await SessionCollection.find();
-  console.log('All sessions in DB:', sessions);
+  if (bearer !== 'Bearer' || !token) {
+    next(createHttpError(401, 'Auth header should be of type Bearer'));
+    return;
+  }
+
+  const session = await SessionsCollection.findOne({ accessToken: token });
 
   if (!session) {
-    return next(createHttpError(401, 'Session not found'));
+    next(createHttpError(401, 'Session not found'));
+    return;
   }
-  if (session.accessTokenValidUntil < Date.now()) {
-    return next(createHttpError(401, 'Access token expired'));
+
+  const isAccessTokenExpired =
+    new Date() > new Date(session.accessTokenValidUntil);
+
+  if (isAccessTokenExpired) {
+    next(createHttpError(401, 'Access token expired'));
   }
-  const user = await findUser({ _id: session.userId });
+
+  const user = await UsersCollection.findById(session.userId);
+
   if (!user) {
-    return next(createHttpError(401, 'User not found'));
+    next(createHttpError(401));
+    return;
   }
 
   req.user = user;

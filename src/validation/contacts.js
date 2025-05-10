@@ -1,20 +1,27 @@
 import Joi from 'joi';
-import { contactsType } from '../constants/contacts.js';
 
-export const contactAddSchema = Joi.object({
-  name: Joi.string().min(3).max(20).required(),
-  phoneNumber: Joi.string().min(3).max(20).required(),
-  email: Joi.string().email().min(3).max(20),
+export const createContactSchema = Joi.object({
+  name: Joi.string().min(3).max(20).required().messages({
+    'string.base': 'Username should be a string', // Кастомізація повідомлення для типу "string"
+    'string.min': 'Username should have at least {#limit} characters',
+    'string.max': 'Username should have at most {#limit} characters',
+    'any.required': 'Username is required',
+  }),
+  phoneNumber: Joi.string().min(3).max(20).required().messages({
+    'string.base': 'Userphonenumber should be a string', // Кастомізація повідомлення для типу "string"
+    'string.min': 'Userphonenumber should have at least {#limit} characters',
+    'string.max': 'Userphonenumber should have at most {#limit} characters',
+    'any.required': 'Userphonenumber is required',
+  }),
+  email: Joi.string().email(),
+  contactType: Joi.string().valid('work', 'home', 'personal').required(),
   isFavourite: Joi.boolean(),
-  contactType: Joi.string()
-    .valid(...contactsType)
-    .required(),
 });
 
-export const contactUpdateSchema = Joi.object({
+export const updateContactSchema = Joi.object({
   name: Joi.string().min(3).max(20),
   phoneNumber: Joi.string().min(3).max(20),
-  email: Joi.string().email().min(3).max(20),
+  email: Joi.string().email(),
+  contactType: Joi.string().valid('work', 'home', 'personal'),
   isFavourite: Joi.boolean(),
-  contactType: Joi.string().valid(...contactsType),
 });

@@ -1,39 +1,14 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
-import { handleSaveError, setUpdateSettings } from './hooks.js';
-
-const sessionSchema = new Schema(
+const sessionsSchema = new Schema(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'users',
-      required: true,
-    },
-    accessToken: {
-      type: String,
-      required: true,
-    },
-    refreshToken: {
-      type: String,
-      required: true,
-    },
-    accessTokenValidUntil: {
-      type: Date,
-      required: true,
-    },
-    refreshTokenValidUntil: {
-      type: Date,
-      required: true,
-    },
+    userId: { type: Schema.Types.ObjectId, ref: 'users' },
+    accessToken: { type: String, required: true },
+    refreshToken: { type: String, required: true },
+    accessTokenValidUntil: { type: Date, required: true },
+    refreshTokenValidUntil: { type: Date, required: true },
   },
-  { versionKey: false, timestamps: true },
+  { timestamps: true, versionKey: false },
 );
 
-sessionSchema.post('save', handleSaveError);
-
-sessionSchema.pre('findOneAndUpdate', setUpdateSettings);
-sessionSchema.post('findOneAndUpdate', handleSaveError);
-
-const SessionCollection = model('session', sessionSchema);
-
-export default SessionCollection;
+export const SessionsCollection = model('sessions', sessionsSchema);
