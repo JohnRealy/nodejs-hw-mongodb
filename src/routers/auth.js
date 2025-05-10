@@ -8,6 +8,7 @@ import {
   loginControler,
   logoutController,
   refreshControler,
+  verifyControler,
   registerControler,
 } from '../controllers/auth.js';
 
@@ -18,6 +19,8 @@ authRouter.post(
   validataBody(authRegisterSchema),
   ctrlWrapper(registerControler),
 );
+
+authRouter.get('/verify', ctrlWrapper(verifyControler));
 
 authRouter.post(
   '/login',
