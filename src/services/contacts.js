@@ -44,18 +44,23 @@ export const getContacts = async ({
     ...paginationData,
   };
 };
-export const getContactsById = (id) => ContactsCollection.findOne({ _id: id });
+export const getContactsById = (id, userId) =>
+  ContactsCollection.findOne({ _id: id }, userId);
 
 export const addContacts = (payload) => ContactsCollection.create(payload);
 
-export const updateContacts = async (_id, payload) => {
-  const data = await ContactsCollection.findOneAndUpdate({ _id }, payload, {
-    new: true,
-    runValidators: true,
-  });
+export const updateContacts = async (_id, payload, userId) => {
+  const data = await ContactsCollection.findOneAndUpdate(
+    { _id, userId },
+    payload,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 
   return data;
 };
 
-export const deleteContacts = (_id) =>
-  ContactsCollection.findOneAndDelete({ _id });
+export const deleteContacts = (_id, userId) =>
+  ContactsCollection.findOneAndDelete({ _id, userId });
