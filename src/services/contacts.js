@@ -65,7 +65,7 @@ export const updateContact = async (
       ...options,
     },
   );
-
+  //Перевірка
   if (!rawResult || !rawResult.value) return null;
 
   return {
