@@ -1,6 +1,6 @@
 tags:
   - Contacts
-summary: Update contact
+summary: Update contact by id
 operationId: updateContact
 description: 'Update contact by id'
 security:
@@ -11,7 +11,7 @@ parameters:
     required: true
     schema:
       type: string
-      example: '66b906fac98596fbad9e2677'
+      example: '6811fecf235d8ed3679b3fc5'
 requestBody:
   content:
     multipart/form-data:
@@ -21,34 +21,32 @@ requestBody:
           name:
             description: "Contact's name"
             type: string
-            example: 'Oleh Tkachuk'
+            example: 'Sasha Redison'
           phoneNumber:
-            description: "Contact's phonenumber"
+            description: "Contact's phone number"
             type: string
-            example: '+380995554456'
+            example: '+380930001122'
           email:
             description: "Contact's email"
             type: string
-            example: 'dmytro3@example.com'
-          contactType:
-            description: 'What type of contact is this'
-            type: string
-            enum: ['work', 'home', 'personal']
+            example: 'redison@mail.com'
           isFavourite:
-            description: 'Whether is contact favourite'
+            description: 'Is the contact a favorite?'
             type: boolean
             example: true
-          userId:
-            description: "User's id"
+          contactType:
+            description: "Contact's type"
             type: string
-            example: 66b68bf3715215e8a074219e
+            enum: [work, home, personal]
+            example: 'personal'
           photo:
-            description: "Link to contact's photo"
+            description: "URL to contact's photo"
             type: string
-            example: https://res.cloudinary.com/dim9kuj10/image/upload/v1723465603/daaqiw5j255soydp6dsu.jpg
+            format: binary
+            example: 'https://res.cloudinary.com/dne9sb0jh/image/upload/v1746533077/q5h7zsknzdoizpagls.jpg'
 responses:
   '200':
-    description: 'Update contact by id'
+    description: Updates a contact
     content:
       application/json:
         schema:
@@ -66,6 +64,6 @@ responses:
               example: Successfully patched a contact!
             data:
               type: object
-              $ref: '../../../components/schemas/contact.yaml'
+              $ref: ../../../components/schemas/contact.yaml
   '404':
-    $ref: '../../../components/responses/404.yaml'
+    $ref: ../../../components/responses/404.yaml

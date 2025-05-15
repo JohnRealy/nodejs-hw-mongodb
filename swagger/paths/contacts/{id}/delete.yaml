@@ -1,6 +1,6 @@
 tags:
   - Contacts
-summary: Delete contacts by id
+summary: Delete contact by id
 operationId: deleteContact
 description: 'Delete contact by id'
 security:
@@ -11,9 +11,20 @@ parameters:
     required: true
     schema:
       type: string
-      example: '66b906fac98596fbad9e2677'
+      example: '6811fecf235d8ed3679b3fc5'
 responses:
   '204':
-    description: 'Delete contact by id, no content'
+    description: ''
   '404':
-    $ref: '../../../components/responses/404.yaml'
+    description: Contact not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: Contact not found

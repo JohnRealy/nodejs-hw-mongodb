@@ -2,33 +2,16 @@ tags:
   - Auth
 summary: Refresh user session
 operationId: refreshUserSession
-description: 'Refresh user session and receive new access token'
+description: 'Refresh access token using refresh token from cookies'
 security:
   - bearerAuth: []
-requestBody:
-  content:
-    application/json:
-      schema:
-        type: object
-        required:
-          - sessionId
-          - refreshToken
-        properties:
-          sessionId:
-            type: string
-          refreshToken:
-            type: string
 responses:
   '200':
-    description: 'Refresh user session'
+    description: 'Successfully refreshed a session!'
     content:
       application/json:
         schema:
           type: object
-          required:
-            - status
-            - message
-            - data
           properties:
             status:
               type: integer
@@ -41,6 +24,8 @@ responses:
               properties:
                 accessToken:
                   type: string
-
+                  example: '26Zr4//nQj6x+8AMt1h7e31i3gLPgk3WBpGN0Axs'
   '401':
-    $ref: '../../components/responses/401.yaml'
+    $ref: ../../../components/responses/401.yaml
+  '500':
+    $ref: ../../../components/responses/500.yaml
